@@ -1,7 +1,7 @@
 from src.components.training.training_module import training_model
 from src.components.training.validation_module import validation_model
 from src.utils import (save_as_json, load_obj, load_checkpoints,save_checkpoints, save_obj)
-
+from src.components.training import EMA
 from torch.utils.data import DataLoader
 import torch
 from src.logger import logger
@@ -18,8 +18,13 @@ class Training():
     def __init__(self, config: TrainingConfig, TEST_MODE: bool = False):
         self.config = config
         self.TEST_MODE = TEST_MODE
-        self.unet_model = load_obj(self.config.unet_load_path).to(self.config.device)
+        
         self.diffusion = load_obj(self.config.diffusion_load_path)
+        self.unet_model = load_obj(self.config.unet_load_path).to(self.config.device)
+        self.ema_model = load_obj(self.config.unet_load_path).to(self.config.device)
+        
+        self.ema_class = EMA(beta=0.995)
+        
         self.optimizer = torch.optim.Adam(self.unet_model.parameters(), lr=self.config.learning_rate, betas=self.config.betas)
         self.loss_fn=torch.nn.MSELoss()
 
@@ -50,11 +55,13 @@ class Training():
             
             for epoch in range(starting_epoch, self.config.epochs+1):
                 loss_train = training_model(train_Dataloader=train_dataloader,
-                                                     unet_model=self.unet_model,
-                                                     diffussion_Model=self.diffusion,
-                                                     optimizer=self.optimizer,
-                                                     loss_fn=self.loss_fn,
-                                                     devices=self.config.device)
+                                            unet_model=self.unet_model,
+                                            diffussion_Model=self.diffusion,
+                                            ema=self.ema_class,
+                                            ema_model=self.ema_model,
+                                            optimizer=self.optimizer,
+                                            loss_fn=self.loss_fn,
+                                            devices=self.config.device)
                 
                 save_checkpoints(
                     save_path=self.config.checkpoint_path,
@@ -62,7 +69,7 @@ class Training():
                     model=self.unet_model,
                     optimizer=self.optimizer)
                 
-                images_generated = validation_model(model_unet=self.unet_model,
+                images_generated = validation_model(model_unet=self.ema_model,
                                                     difussion_model=self.diffusion,
                                                     img_size=self.config.img_size,
                                                     device=self.config.device)
@@ -79,7 +86,7 @@ class Training():
             save_as_json(data=result_list, save_path=self.config.results_save_path)
             logger.info("Training results saved as JSON.")
             
-            save_obj(self.unet_model, save_path=self.config.final_unet_model_path)
+            save_obj(self.ema_model, save_path=self.config.final_unet_model_path)
             save_obj(self.diffusion, save_path=self.config.final_diffusion_path)
             logger.info("Final models saved.")
             

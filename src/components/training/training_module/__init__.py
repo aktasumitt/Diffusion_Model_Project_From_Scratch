@@ -3,7 +3,7 @@ import tqdm
 from src.exception.exception import ExceptionNetwork, sys
 
 # Training Func
-def training_model(train_Dataloader, unet_model, diffussion_Model, optimizer, loss_fn, devices):
+def training_model(train_Dataloader, unet_model, diffussion_Model, ema_model,ema, optimizer, loss_fn, devices):
 
     try:
         unet_model.train()
@@ -34,8 +34,13 @@ def training_model(train_Dataloader, unet_model, diffussion_Model, optimizer, lo
 
             loss_train.backward()
             optimizer.step()
+            
+            # Upgrade EMA
+            with torch.no_grad():
+                ema.step_ema(ema_model, unet_model)
+                
             progress_bar.update(1)
-        
+            
         loss=train_loss_value/(batch_train+1)
         
         progress_bar.set_postfix({"Loss_Train": loss})
