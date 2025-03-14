@@ -13,7 +13,7 @@ class TestModule():
     def __init__(self, config: TestConfig):
         self.config = config
 
-    def test_model(self,model_unet,difussion_model,img_size,test_image_save_path,device:str="cpu"):  # Generator
+    def test_model(self,model_unet,difussion_model,img_size,test_image_save_path,device:str="cuda"):  # Generator
         # We will see generated fake images for each labels 5 times
        
         try:    
@@ -41,9 +41,9 @@ class TestModule():
         
     def initiate_testing(self):
         
-        model = load_obj(path=self.config.u_net_model_path)
+        model = load_obj(path=self.config.u_net_model_path).to("cuda")
         diffusion_model = load_obj(path=self.config.diffusion_path)
-        self.test_model(model_generator=model,difussion_model=diffusion_model,
+        self.test_model(model,difussion_model=diffusion_model,
                         img_size=self.config.img_size,test_image_save_path=self.config.img_save_path)
         
     
