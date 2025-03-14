@@ -12,6 +12,7 @@ class DataTransformationConfig:
     train_dataset_save_path: Path 
     normalize_mean: tuple 
     normalize_std: tuple 
+    img_size: int
     
     
 @dataclass

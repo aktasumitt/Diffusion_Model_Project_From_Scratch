@@ -12,7 +12,7 @@ class Diffusion():
             
             # For the formula to aplly noising and denoising process
             self.beta=torch.linspace(beta_start,beta_end,n_timesteps)
-            self.alpha=1-self.beta
+            self.alpha=1. - self.beta
             self.alpha_hat=torch.cumprod(self.alpha,dim=0)
             
         except Exception as e:
@@ -54,9 +54,8 @@ class Diffusion():
                 
                 # CFG predicted_noise. This process about, if we train conditional, after we need to predict uncoditional.
                 # We use torch lerp to aproach conditional prediction from unconditional smoothly with 3 scale factor
-                if labels!=None:
-                    predicted_noise_unc=model(x,T,None)
-                    predicted_noise=torch.lerp(predicted_noise_unc,predicted_noise,3) 
+                predicted_noise_unc=model(x,T,None)
+                predicted_noise=torch.lerp(predicted_noise_unc,predicted_noise,3) 
                 
                 beta=self.beta[T][:,None,None,None].to(device)
                 alpha=self.alpha[T][:,None,None,None].to(device)
@@ -64,7 +63,7 @@ class Diffusion():
                 
                 noise=(torch.randn_like(x) if i>1 else torch.zeros_like(x)).to(device)
                 
-                x = (1/alpha_hat) * (x-((1-alpha)/torch.sqrt(1-alpha_hat))*predicted_noise) +(torch.sqrt(beta)*noise)
+                x = (1/alpha) * (x-((1-alpha)/torch.sqrt(1-alpha_hat))*predicted_noise) +(torch.sqrt(beta)*noise)
                 prog_bar.update(1)
             
             prog_bar.close()

@@ -8,7 +8,7 @@ class Params:
     beta_start = 1e-4
     beta_end = 0.02
     n_timesteps = 1000
-    img_size = 32
+    img_size = 64
     device = "cuda"
     channel_size = 3
     label_size = 10

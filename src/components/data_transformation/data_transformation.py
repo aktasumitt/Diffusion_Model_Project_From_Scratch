@@ -15,7 +15,9 @@ class DataTransformation:
     
     def transformer(self):
         try:
-            transformer = transforms.Compose([transforms.Normalize(self.config.normalize_mean, self.config.normalize_std)])
+            transformer = transforms.Compose([transforms.Resize((80,80)),
+                                              transforms.RandomCrop((self.config.img_size,self.config.img_size)),
+                                              transforms.Normalize(self.config.normalize_mean, self.config.normalize_std)])
             
             return transformer
         except Exception as e:

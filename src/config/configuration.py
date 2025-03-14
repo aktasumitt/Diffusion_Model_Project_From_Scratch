@@ -28,7 +28,8 @@ class Configuration:
             train_data_path=self.config.train_data_path,
             train_dataset_save_path=self.config.train_dataset_save_path,
             normalize_mean=self.params.normalize_mean,
-            normalize_std=self.params.normalize_std
+            normalize_std=self.params.normalize_std,
+            img_size=self.params.img_size
         )
 
     def model_config(self):
