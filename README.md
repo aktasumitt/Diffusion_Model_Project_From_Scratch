@@ -4,7 +4,7 @@
 In this project, I aimed to create a Diffusion model with Cifar10 dataset for Create image from random noise
 
 ## Dataset:
-- I used the Cifar10 and Mnist datasets for this project, which consists of 10 labels with total 60k images on train and 10k images on test.
+- I used the Cifar10 and Mnist datasets for this project, which consists of 10 labels with total 60k images on training.
 - size of images are (32x32x3), i transform to (64x64x3)
 
 ## Model:
@@ -25,8 +25,3 @@ In this project, I aimed to create a Diffusion model with Cifar10 dataset for Cr
 -  We will then subtract this noise and apply the same process again, progressing until we eventually find the image without noise.
 -  Additionally, we scale the time values with embeddings and feed them to the model during downsampling and upsampling. We then combine these time values with the image output so that the model knows at which time value it is attempting to predict output.
 -  Since we are using a conditional model, we embed the labels as well, adding them to the t dimension.
-
-## Train:
-- During training, we apply these steps individually for each batch of images, and eventually generate images through sampling.
-- We teach the model to remove noise from the image, essentially teaching it to generate images from noise because at the final stage where we reach the maximum noise level, there is no trace of the original image left.
-- We use the 'Adam' optimizer and Mean Square Error Loss function during training.
