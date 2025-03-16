@@ -23,7 +23,7 @@ class TestModule():
                 img_pred=difussion_model.denoising(model_unet,random_noise,labels,device)
                 
                 # Tensorları grid haline getir (nrow belirterek sütun sayısını ayarlıyoruz)
-                grid_tensor = make_grid(img_pred, nrow=10, normalize=True, scale_each=True)
+                grid_tensor = make_grid(img_pred, nrow=10)
                 grid_tensor = (grid_tensor*255).type(torch.uint8)  # Normalizasyonu kaldır, uint8 formatına çevir
 
                 # Grid görüntüsünü NumPy formatına çevir

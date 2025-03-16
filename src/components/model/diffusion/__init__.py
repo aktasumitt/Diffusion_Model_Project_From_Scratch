@@ -42,7 +42,7 @@ class Diffusion():
     def denoising(self,model:None,random_noise,labels:None,device:None): # Test the model with random noisy img
         try:
             x=random_noise
-            prog_bar=tqdm.tqdm(range(self.n_timesteps),"Prediction Image Step")
+            prog_bar=tqdm.tqdm(range(self.n_timesteps),"validation step")
             model.eval()
 
             
